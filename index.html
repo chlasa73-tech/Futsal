@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Socios PWA</title>
+    <!-- Web App Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e3a8a">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --warning: #f59e0b;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { font-size: 24px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            font-size: 14px;
+        }
+
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-success:hover { background-color: var(--success-hover); }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-secondary { background-color: var(--text-light); color: white; }
+
+        .search-box {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        tr:hover { background-color: #f8fafc; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-active { background-color: #d1fae5; color: #065f46; }
+        .badge-inactive { background-color: #fee2e2; color: #991b1b; }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: var(--text-light);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #334155;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Sistema de Gestión de Socios PWA</h1>
+        <div id="network-status" class="badge badge-active">Online</div>
+    </header>
+
+    <!-- Formulario de Alta y Modificación -->
+    <div class="card">
+        <h2 style="margin-bottom: 15px; font-size: 18px;" id="form-title">Agregar / Modificar Socio</h2>
+        <form id="socio-form">
+            <input type="hidden" id="idSocio">
+            <div class="grid-form">
+                <div class="form-group">
+                    <label for="dni">DNI</label>
+                    <input type="text" id="dni" required placeholder="Ej: 12345678">
+                </div>
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="fechaNac">Fecha de Nacimiento</label>
+                    <input type="date" id="fechaNac" required>
+                </div>
+            </div>
+            <div class="grid-form">
+                <div class="form-group">
+                    <label for="numSocio">N° de Socio</label>
+                    <input type="text" id="numSocio" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipoSocio">Tipo de Socio</label>
+                    <select id="tipoSocio" required>
+                        <option value="Pleno">Pleno</option>
+                        <option value="Adherente">Adherente</option>
+                        <option value="Infantil">Infantil</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" required>
+                        <option value="Fútbol">Fútbol</option>
+                        <option value="Básquet">Básquet</option>
+                        <option value="Tenis">Tenis</option>
+                        <option value="Natación">Natación</option>
+                        <option value="Gimnasio">Gimnasio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+                    <select id="estado" required>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn-success" id="btn-save">Guardar</button>
+                <button type="button" class="btn-secondary" id="btn-cancel" onclick="resetForm()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Búsqueda Inteligente y Filtros -->
+    <div class="card">
+        <h2 style="margin-bottom: 15px; font-size: 18px;">Búsqueda y Filtros</h2>
+        <div class="search-box">
+            <div class="form-group">
+                <label for="search-input">Búsqueda Inteligente (DNI, Nombre, Apellido)</label>
+                <input type="text" id="search-input" placeholder="Escriba para buscar...">
+            </div>
+            <div class="form-group">
+                <label for="filter-categoria">Filtrar por Categoría</label>
+                <select id="filter-categoria">
+                    <option value="Todos">Todos</option>
+                    <option value="Fútbol">Fútbol</option>
+                    <option value="Básquet">Básquet</option>
+                    <option value="Tenis">Tenis</option>
+                    <option value="Natación">Natación</option>
+                    <option value="Gimnasio">Gimnasio</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn-primary" id="btn-export" onclick="exportToCSV()" style="width: 100%;">Exportar Listado</button>
+            </div>
+        </div>
+
+        <div id="loading-msg" class="loading">Cargando datos desde Google Sheets...</div>
+
+        <div class="table-container">
+            <table id="socios-table">
+                <thead>
+                    <tr>
+                        <th>DNI</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>F. Nacimiento</th>
+                        <th>N° Socio</th>
+                        <th>Tipo</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Datos dinámicos -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwZ0XjPcGX0UTeihcZnnGoM2AeEZYMZhmQ4HzFGhtkt8pSnLgBILxxiTWZfqh6jXu8R/exec';
+    let todosLosSocios = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchSocios();
+        document.getElementById('socio-form').addEventListener('submit', handleFormSubmit);
+        document.getElementById('search-input').addEventListener('input', aplicarFiltrosYBusqueda);
+        document.getElementById('filter-categoria').addEventListener('change', aplicarFiltrosYBusqueda);
+        
+        window.addEventListener('online', () => updateOnlineStatus(true));
+        window.addEventListener('offline', () => updateOnlineStatus(false));
+    });
+
+    function updateOnlineStatus(isOnline) {
+        const el = document.getElementById('network-status');
+        if (isOnline) {
+            el.textContent = 'Online';
+            el.className = 'badge badge-active';
+        } else {
+            el.textContent = 'Offline (Modo Lectura)';
+            el.className = 'badge badge-danger';
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    async function fetchSocios() {
+        document.getElementById('loading-msg').style.display = 'block';
+        try {
+            const response = await fetch(`${WEB_APP_URL}?action=read`);
+            const resData = await response.json();
+            if (resData.status === 'success') {
+                todosLosSocios = resData.data;
+                renderTable(todosLosSocios);
+            } else {
+                showToast('Error al obtener datos');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Error de conexión de red');
+        } finally {
+            document.getElementById('loading-msg').style.display = 'none';
+        }
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+        if(data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No se encontraron socios</td></tr>';
+            return;
+        }
+        data.forEach(socio => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${socio.dni}</td>
+                <td>${socio.nombre}</td>
+                <td>${socio.apellido}</td>
+                <td>${formatDate(socio.fechaNac)}</td>
+                <td>${socio.numSocio}</td>
+                <td>${socio.tipoSocio}</td>
+                <td>${socio.categoria}</td>
+                <td><span class="badge ${socio.estado === 'Activo' ? 'badge-active' : 'badge-inactive'}">${socio.estado}</span></td>
+                <td>
+                    <button class="btn-primary" onclick="editSocio('${socio.dni}')" style="padding:4px 8px; font-size:12px;">Editar</button>
+                    <button class="btn-danger" onclick="deleteSocio('${socio.dni}')" style="padding:4px 8px; font-size:12px;">Baja</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function formatDate(dateStr) {
+        if(!dateStr) return '';
+        if(dateStr.includes('T')) return dateStr.split('T')[0];
+        return dateStr;
+    }
+
+    function aplicarFiltrosYBusqueda() {
+        const query = document.getElementById('search-input').value.toLowerCase().trim();
+        const catFilter = document.getElementById('filter-categoria').value;
+
+        const filtrados = todosLosSocios.filter(socio => {
+            const cumpleCat = (catFilter === 'Todos' || socio.categoria === catFilter);
+            const cumpleBusqueda = !query || 
+                socio.dni.toString().toLowerCase().includes(query) ||
+                socio.nombre.toLowerCase().includes(query) ||
+                socio.apellido.toLowerCase().includes(query);
+            return cumpleCat && cumpleBusqueda;
+        });
+        renderTable(filtrados);
+    }
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        if (!navigator.onLine) {
+            showToast('No puedes guardar cambios estando sin conexión.');
+            return;
+        }
+
+        const idSocio = document.getElementById('idSocio').value;
+        const socioData = {
+            dni: document.getElementById('dni').value,
+            nombre: document.getElementById('nombre').value,
+            apellido: document.getElementById('apellido').value,
+            fechaNac: document.getElementById('fechaNac').value,
+            numSocio: document.getElementById('numSocio').value,
+            tipoSocio: document.getElementById('tipoSocio').value,
+            categoria: document.getElementById('categoria').value,
+            estado: document.getElementById('estado').value
+        };
+
+        const action = idSocio ? 'update' : 'create';
+        
+        document.getElementById('btn-save').disabled = true;
+        showToast('Procesando solicitud...');
+
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // standard integration for Apps Script macros execution redirection bypass
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ...socioData })
+            });
+            
+            // As non-cors returns an opaque response type, we fetch data again to refresh UI securely
+            showToast('Operación enviada con éxito');
+            resetForm();
+            setTimeout(fetchSocios, 1500); 
+        } catch (error) {
+            showToast('Error en el servidor');
+            document.getElementById('btn-save').disabled = false;
+        }
+    }
+
+    function editSocio(dni) {
+        const socio = todosLosSocios.find(s => s.dni.toString() === dni.toString());
+        if (!socio) return;
+
+        document.getElementById('idSocio').value = socio.dni;
+        document.getElementById('dni').value = socio.dni;
+        document.getElementById('dni').disabled = true; // No modificar llave primaria original
+        document.getElementById('nombre').value = socio.nombre;
+        document.getElementById('apellido').value = socio.apellido;
+        document.getElementById('fechaNac').value = formatDate(socio.fechaNac);
+        document.getElementById('numSocio').value = socio.numSocio;
+        document.getElementById('tipoSocio').value = socio.tipoSocio;
+        document.getElementById('categoria').value = socio.categoria;
+        document.getElementById('estado').value = socio.estado;
+
+        document.getElementById('form-title').textContent = 'Modificar Socio';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deleteSocio(dni) {
+        if (!navigator.onLine) { return showToast('Acción no permitida en modo offline.'); }
+        if (!confirm(`¿Está seguro de que desea dar de baja al socio con DNI: ${dni}?`)) return;
+
+        showToast('Eliminando...');
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', dni: dni })
+            });
+            showToast('Baja procesada');
+            setTimeout(fetchSocios, 1500);
+        } catch (error) {
+            showToast('Error al intentar eliminar');
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('socio-form').reset();
+        document.getElementById('idSocio').value = '';
+        document.getElementById('dni').disabled = false;
+        document.getElementById('form-title').textContent = 'Agregar / Modificar Socio';
+        document.getElementById('btn-save').disabled = false;
+    }
+
+    function exportToCSV() {
+        const catFilter = document.getElementById('filter-categoria').value;
+        const filtrados = todosLosSocios.filter(socio => catFilter === 'Todos' || socio.categoria === catFilter);
+
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+        csvContent += "DNI;Nombre;Apellido;Fecha de Nacimiento;Numero de Socio;Tipo de Socio;Categoria;Estado\n";
+
+        filtrados.forEach(s => {
+            csvContent += `${s.dni};${s.nombre};${s.apellido};${formatDate(s.fechaNac)};${s.numSocio};${s.tipoSocio};${s.categoria};${s.estado}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Listado_Socios_${catFilter === 'Todos' ? 'Completo' : catFilter}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+<!-- Service Worker Registration for PWA feature -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado.', reg))
+                .catch(err => console.error('Error al registrar Service Worker', err));
+        });
+    }
+</script>
+</body>
+</html>
