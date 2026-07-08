@@ -1,27 +1,39 @@
-const CACHE_NAME = 'socios-pwa-cache-v2.6';
-const ASSETS = [
-  './',
-  './img/icon-192.png',
-  './img/icon-512.png',
-  './index.html',
-  './manifest.json'
+const CACHE_NAME = 'futsal-pwa-v3'; // Cambiamos a v3 para forzar la actualización
+const assets = [
+  'index.html',
+  'manifest.json',
+  'img/icon-192.png',
+  'img/icon-512.png'
 ];
 
-self.addEventListener('install', (e) => {
+// Evento de instalación: guarda en caché los archivos básicos
+self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(assets);
+    }).then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener('fetch', (e) => {
-  // Only handle standard local requests for application Shell architecture assets
-  if (e.request.url.includes('script.google.com')) {
-    return; // Let API calls bypass cache layout handling natively
-  }
+// Evento de activación: destruye cualquier caché vieja de versiones anteriores
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
+});
+
+// Evento fetch: responde desde la caché o va a la red si no existe
+self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
+    caches.match(e.request).then(cachedResponse => {
       return cachedResponse || fetch(e.request);
     })
   );
