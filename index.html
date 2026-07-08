@@ -189,7 +189,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz6GaaNx1zVZCiWKQ9Av-9O4nir42c1wSNOYZQ55jCMHUpv8IDBfHy7BfDm6Ot7nZPW/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyBfGiHOVfViPrKNwVE_tTUXyUKiuFZxJRNfTJK-5Jy7mBuXBZNWLpI6NjavuPrM6_6/exec';
     let todosLosSocios = [];
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -202,14 +202,23 @@
     async function fetchSocios() {
         document.getElementById('loading-msg').style.display = 'block';
         try {
-            const response = await fetch(`${WEB_APP_URL}?action=read`, { method: 'GET', redirect: 'follow' });
-            const resData = await response.json();
+            // Eliminamos parámetros restrictivos para que Google maneje la redirección nativa
+            const response = await fetch(`${WEB_APP_URL}?action=read`);
+            const textData = await response.text(); // Leemos como texto primero para evitar bloqueos
+            const resData = JSON.parse(textData);   // Parseamos manualmente el JSON
+            
             if (resData.status === 'success') {
                 todosLosSocios = resData.data;
                 aplicarFiltrosYBusqueda();
-            } else { showToast('Error al obtener datos'); }
-        } catch (error) { showToast('Error de conexión con la base de datos'); }
-        finally { document.getElementById('loading-msg').style.display = 'none'; }
+            } else {
+                showToast('Error al obtener datos de la hoja');
+            }
+        } catch (error) {
+            console.error('Error detallado de conexión:', error);
+            showToast('Error de conexión de red');
+        } finally {
+            document.getElementById('loading-msg').style.display = 'none';
+        }
     }
 
     function aplicarFiltrosYBusqueda() {
