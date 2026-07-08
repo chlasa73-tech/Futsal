@@ -1,5 +1,6 @@
 const CACHE_NAME = 'futsal-pwa-v3.2'; 
 const assets = [
+  './',
   'index.html',
   'manifest.json',
   'img/icon-192.png',
