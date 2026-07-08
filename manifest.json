@@ -1,21 +1,21 @@
 {
   "short_name": "Socios",
   "name": "Gestión Integral de Socios PWA",
-"icons": [
+  "icons": [
     {
-      "src": "./img/icon-192.png",
+      "src": "img/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "./img/icon-512.png",
+      "src": "img/icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "background_color": "#f8fafc",
   "theme-color": "#1e3a8a",
   "display": "standalone",
