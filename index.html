@@ -23,31 +23,33 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--background); color: var(--text); padding: 20px; }
+        body { background-color: var(--background); color: var(--text); padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
         header {
-            background-color: var(--primary); color: white; padding: 20px;
+            background-color: var(--primary); color: white; padding: 15px;
             border-radius: 8px; margin-bottom: 20px; display: flex;
             justify-content: space-between; align-items: center;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
+        header h1 { font-size: 20px; }
 
         .card {
             background: var(--surface); border: 1px solid var(--border);
-            border-radius: 8px; padding: 20px; margin-bottom: 20px;
+            border-radius: 8px; padding: 15px; margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* Estilos del Modal (Formulario Flotante) */
+        /* Estilos del Modal Flotante */
         .modal {
             display: none; position: fixed; z-index: 2000;
             left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+            overflow-y: auto; padding: 10px;
         }
         .modal-content {
-            background-color: var(--surface); padding: 30px;
-            border-radius: 8px; width: 90%; max-width: 800px;
+            background-color: var(--surface); padding: 20px;
+            border-radius: 8px; width: 100%; max-width: 800px;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
             animation: fadeIn 0.3s ease;
         }
@@ -55,10 +57,14 @@
         .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 14px; font-weight: 600; margin-bottom: 5px; color: var(--text-light); }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
 
-        .search-box { display: grid; grid-template-columns: 2fr 1fr auto auto; gap: 15px; align-items: end; }
+        /* Buscador Responsivo */
+        .search-box { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        
         .table-container { overflow-x: auto; margin-top: 15px; }
+        .collapsed { display: none; }
+
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; margin-bottom: 25px; }
         th, td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
         th { background-color: #f1f5f9; color: var(--text-light); font-weight: 600; }
@@ -66,15 +72,18 @@
 
         .category-header {
             background-color: #e2e8f0; color: var(--primary);
-            padding: 10px 15px; font-weight: bold; font-size: 16px;
+            padding: 12px 15px; font-weight: bold; font-size: 15px;
             border-radius: 4px; margin-top: 20px; margin-bottom: 5px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
         }
+        .category-title { display: flex; align-items: center; gap: 10px; }
 
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
         .badge-active { background-color: #d1fae5; color: #065f46; }
         .badge-inactive { background-color: #fee2e2; color: #991b1b; }
 
-        button { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
+        button { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; text-align: center; }
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-success { background-color: var(--success); color: white; }
         .btn-danger { background-color: var(--danger); color: white; }
@@ -82,6 +91,50 @@
         
         .loading { text-align: center; padding: 20px; font-style: italic; color: var(--text-light); }
         .toast { position: fixed; bottom: 20px; right: 20px; background: #334155; color: white; padding: 12px 24px; border-radius: 6px; display: none; z-index: 3000; }
+        
+        .chk-col { width: 40px; text-align: center; }
+        input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+
+        /* ================================================================= */
+        /* DISEÑO ULTRA RESPONSIVO PARA CELULARES (MEDIA QUERIES)            */
+        /* ================================================================= */
+        @media (min-width: 768px) {
+            .search-box { grid-template-columns: 2fr 1fr auto auto; align-items: end; }
+            header h1 { font-size: 24px; }
+        }
+
+        @media (max-width: 767px) {
+            /* Transformamos la tabla rígida en tarjetas adaptables en vertical */
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; } /* Esconde cabeceras en móviles */
+            
+            tr { 
+                background: white; border: 1px solid var(--border); 
+                border-radius: 8px; padding: 12px; margin-bottom: 12px; 
+                position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+            
+            td { 
+                border: none; border-bottom: 1px dashed #f1f5f9; 
+                position: relative; padding-left: 45%; text-align: right; font-size: 13px;
+            }
+            
+            td:last-child { border-bottom: none; text-align: center; padding-left: 15px; margin-top: 10px; }
+
+            /* Inyecta etiquetas automáticas al costado izquierdo de cada celda */
+            td:before { 
+                position: absolute; top: 12px; left: 12px; width: 40%; 
+                text-align: left; font-weight: 700; color: var(--text-light); content: attr(data-label);
+            }
+
+            /* Excepción visual para la fila del checkbox selector */
+            td.chk-col { text-align: left; padding-left: 15px; background: #f8fafc; border-radius: 4px; margin-bottom: 8px; }
+            td.chk-col:before { content: ""; position: static; }
+            td.chk-col label { font-weight: bold; margin-left: 8px; color: var(--primary); font-size: 13px; }
+
+            .modal-content { width: 100%; max-height: 95vh; overflow-y: auto; }
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -89,7 +142,7 @@
 
 <div class="container">
     <header>
-        <h1>Gestión de Jugadores - Panel Principal</h1>
+        <h1>Gestión de Jugadores</h1>
         <div id="network-status" class="badge badge-active">Online</div>
     </header>
 
@@ -103,27 +156,24 @@
                 <label for="filter-categoria">Filtrar por Categoría</label>
                 <select id="filter-categoria">
                     <option value="Todos">Todas las Categorías</option>
-                    <option value="Fútbol">Fútbol</option>
-                    <option value="Básquet">Básquet</option>
-                    <option value="Tenis">Tenis</option>
-                    <option value="Natación">Natación</option>
-                    <option value="Gimnasio">Gimnasio</option>
+                    <option value="Senior">Senior</option>
                     <option value="Master">Master</option>
+                    <option value="Promaster">Promaster</option>
+                    <option value="Leyenda">Leyenda</option>
                 </select>
             </div>
             <button class="btn-success" onclick="openModalForCreate()">+ Nuevo Jugador</button>
-            <button class="btn-primary" onclick="exportToCSV()">Exportar Listado</button>
+            <button class="btn-primary" onclick="exportSelectedToCSV()">Exportar Seleccionados</button>
         </div>
 
         <div id="loading-msg" class="loading">Cargando datos desde la nube...</div>
-        <div id="main-dashboard">
-            </div>
+        <div id="main-dashboard"></div>
     </div>
 </div>
 
 <div id="form-modal" class="modal">
     <div class="modal-content">
-        <h2 style="margin-bottom: 20px; font-size: 20px; color: var(--primary);" id="form-title">Agregar Jugador</h2>
+        <h2 style="margin-bottom: 20px; font-size: 18px; color: var(--primary);" id="form-title">Agregar Jugador</h2>
         <form id="socio-form">
             <input type="hidden" id="idSocio">
             <div class="grid-form">
@@ -156,17 +206,17 @@
                         <option value="Adherente">Adherente</option>
                         <option value="Infantil">Infantil</option>
                         <option value="Activo">Activo</option>
+                        <option value="Vitalicio">Vitalicio</option>
+                        <option value="Institucional">Institucional</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="categoria">Categoría</label>
                     <select id="categoria" required>
-                        <option value="Fútbol">Fútbol</option>
-                        <option value="Básquet">Básquet</option>
-                        <option value="Tenis">Tenis</option>
-                        <option value="Natación">Natación</option>
-                        <option value="Gimnasio">Gimnasio</option>
+                        <option value="Senior">Senior</option>
                         <option value="Master">Master</option>
+                        <option value="Promaster">Promaster</option>
+                        <option value="Leyenda">Leyenda</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -175,6 +225,7 @@
                         <option value="Activo">Activo</option>
                         <option value="Inactivo">Inactivo</option>
                         <option value="Continua">Continua</option>
+                        <option value="Alta">Alta</option>
                     </select>
                 </div>
             </div>
@@ -189,7 +240,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyyg0vl9wnLTotyHisPdjz0yoOP0w2eJ0ucYKILz9ETnzAWBxMPqGOt3ktQ5ibEgEJK/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxE_FvDoLjwVU6FkpmohELOWAxUCNiCPS_qiFOeEpy4VnqGcUxVU0YjCqVTy_qIqO9W/exec';
     let todosLosSocios = [];
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -202,30 +253,21 @@
     async function fetchSocios() {
         document.getElementById('loading-msg').style.display = 'block';
         try {
-            // Realizamos la petición directa dejando que el navegador maneje la redirección de Google
-            const response = await fetch(`${WEB_APP_URL}?action=read`);
-            const textData = await response.text(); // Recibe la respuesta limpia como texto primero
-            const resData = JSON.parse(textData);   // Convierte el texto a JSON manualmente
-            
+            const response = await fetch(`${WEB_APP_URL}?action=read`, { method: 'GET', redirect: 'follow' });
+            const textData = await response.text();
+            const resData = JSON.parse(textData);
             if (resData.status === 'success') {
                 todosLosSocios = resData.data;
                 aplicarFiltrosYBusqueda();
-            } else {
-                showToast('Error al procesar los datos de la hoja');
-            }
-        } catch (error) {
-            console.error('Error de red detallado:', error);
-            showToast('Error de conexión de red');
-        } finally {
-            document.getElementById('loading-msg').style.display = 'none';
-        }
+            } else { showToast('Error al procesar datos'); }
+        } catch (error) { showToast('Error de conexión de red'); }
+        finally { document.getElementById('loading-msg').style.display = 'none'; }
     }
 
     function aplicarFiltrosYBusqueda() {
         const query = document.getElementById('search-input').value.toLowerCase().trim();
         const catFilter = document.getElementById('filter-categoria').value;
 
-        // 1. Filtrar y buscar inteligentemente
         let filtrados = todosLosSocios.filter(socio => {
             const cumpleCat = (catFilter === 'Todos' || socio.categoria === catFilter);
             const cumpleBusqueda = !query || 
@@ -235,11 +277,20 @@
             return cumpleCat && cumpleBusqueda;
         });
 
-        // 2. Ordenar Alfabéticamente/Numéricamente por DNI de menor a mayor por defecto
         filtrados.sort((a, b) => parseInt(a.dni || 0) - parseInt(b.dni || 0));
-
-        // 3. Agrupar por Categorías de forma dinámica
         renderDashboardAgrupado(filtrados);
+    }
+
+    function calcularEdad(fechaString) {
+        if (!fechaString) return 'N/A';
+        const hoy = new Date();
+        const cumpleanos = new Date(fechaString);
+        if (isNaN(cumpleanos.getTime())) return 'N/A';
+        
+        let edad = hoy.getFullYear() - cumpleanos.getFullYear();
+        const m = hoy.getMonth() - cumpleanos.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) { edad--; }
+        return edad;
     }
 
     function renderDashboardAgrupado(data) {
@@ -247,11 +298,10 @@
         container.innerHTML = '';
 
         if(data.length === 0) {
-            container.innerHTML = '<div class="loading">No se encontraron jugadores con los filtros seleccionados.</div>';
+            container.innerHTML = '<div class="loading">No se encontraron jugadores.</div>';
             return;
         }
 
-        // Reducir datos agrupando por la propiedad 'categoria'
         const grupos = data.reduce((acc, jugador) => {
             const cat = jugador.categoria || 'Sin Categoría';
             if (!acc[cat]) acc[cat] = [];
@@ -259,25 +309,46 @@
             return acc;
         }, {});
 
-        // Renderizar un bloque de título y tabla por cada categoría existente
-        for (const categoria in grupos) {
+        const ordenCategorias = ["Senior", "Master", "Promaster", "Leyenda"];
+        Object.keys(grupos).forEach(cat => {
+            if (!ordenCategorias.includes(cat)) ordenCategorias.push(cat);
+        });
+
+        ordenCategorias.forEach(categoria => {
+            if (!grupos[categoria] || grupos[categoria].length === 0) return;
+
+            const safeCatId = categoria.replace(/\s+/g, '_');
             const catDiv = document.createElement('div');
             
             const title = document.createElement('div');
             title.className = 'category-header';
-            title.textContent = `${categoria.toUpperCase()} (${grupos[categoria].length} jugadores)`;
+            title.onclick = (e) => {
+                if (e.target.type === 'checkbox') return; 
+                toggleCollapse(safeCatId);
+            };
+
+            title.innerHTML = `
+                <div class="category-title">
+                    <input type="checkbox" class="master-chk" data-target="${safeCatId}" onclick="toggleGroupSelection(this, '${safeCatId}')">
+                    <span>${categoria.toUpperCase()} (${grupos[categoria].length})</span>
+                </div>
+                <span id="icon-${safeCatId}">▼</span>
+            `;
             catDiv.appendChild(title);
 
             const tableWrap = document.createElement('div');
             tableWrap.className = 'table-container';
+            tableWrap.id = `table-container-${safeCatId}`;
             
             let tableHtml = `
                 <table>
                     <thead>
                         <tr>
+                            <th class="chk-col">Sel.</th>
                             <th>DNI</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
+                            <th>Edad</th>
                             <th>F. Nacimiento</th>
                             <th>N° Socio</th>
                             <th>Tipo</th>
@@ -289,22 +360,30 @@
             `;
 
             grupos[categoria].forEach(j => {
-                const esActivo = (j.estado === 'Activo' || j.estado === 'Continua');
+                const esActivo = (j.estado === 'Activo' || j.estado === 'Continua' || j.estado === 'Alta');
+                const edad = calcularEdad(j.fechaNac);
+                
                 const btnBajaLogica = esActivo 
-                    ? `<button class="btn-danger" onclick="toggleEstadoLogico('${j.dni}', 'Inactivo')" style="padding:4px 8px; font-size:12px;">Baja</button>`
-                    : `<button class="btn-success" onclick="toggleEstadoLogico('${j.dni}', 'Activo')" style="padding:4px 8px; font-size:12px; background-color:var(--success)">Activar</button>`;
+                    ? `<button class="btn-danger" onclick="toggleEstadoLogico('${j.dni}', 'Inactivo')" style="padding:5px 10px; font-size:12px; margin-left:5px;">Baja</button>`
+                    : `<button class="btn-success" onclick="toggleEstadoLogico('${j.dni}', 'Activo')" style="padding:5px 10px; font-size:12px; background-color:var(--success); margin-left:5px;">Activar</button>`;
 
+                // IMPORTANTE: Se añade 'data-label' a cada celda para que en celulares aparezca la descripción a la izquierda
                 tableHtml += `
                     <tr>
-                        <td><b>${j.dni}</b></td>
-                        <td>${j.nombre || ''}</td>
-                        <td>${j.apellido || ''}</td>
-                        <td>${formatDate(j.fechaNac)}</td>
-                        <td>${j.numSocio || 'N/A'}</td>
-                        <td>${j.tipoSocio || ''}</td>
-                        <td><span class="badge ${esActivo ? 'badge-active' : 'badge-inactive'}">${j.estado || 'Inactivo'}</span></td>
-                        <td>
-                            <button class="btn-primary" onclick="openModalForEdit('${j.dni}')" style="padding:4px 8px; font-size:12px;">Editar</button>
+                        <td class="chk-col">
+                            <input type="checkbox" class="row-chk chk-${safeCatId}" data-dni="${j.dni}" id="chk-box-${j.dni}">
+                            <label for="chk-box-${j.dni}" class="mobile-only-label" style="display:none;"></label>
+                        </td>
+                        <td data-label="DNI"><b>${j.dni}</b></td>
+                        <td data-label="Nombre">${j.nombre || ''}</td>
+                        <td data-label="Apellido">${j.apellido || ''}</td>
+                        <td data-label="Edad"><b>${edad}</b></td>
+                        <td data-label="F. Nacimiento">${formatDate(j.fechaNac)}</td>
+                        <td data-label="N° Socio">${j.numSocio || 'N/A'}</td>
+                        <td data-label="Tipo">${j.tipoSocio || ''}</td>
+                        <td data-label="Estado"><span class="badge ${esActivo ? 'badge-active' : 'badge-inactive'}">${j.estado || 'Inactivo'}</span></td>
+                        <td data-label="Acciones">
+                            <button class="btn-primary" onclick="openModalForEdit('${j.dni}')" style="padding:5px 10px; font-size:12px;">Editar</button>
                             ${btnBajaLogica}
                         </td>
                     </tr>
@@ -315,7 +394,60 @@
             tableWrap.innerHTML = tableHtml;
             catDiv.appendChild(tableWrap);
             container.appendChild(catDiv);
+        });
+
+        // Script para ajustar etiquetas visuales del checkbox maestro en celular de forma dinámica
+        if(window.innerWidth < 768) {
+            document.querySelectorAll('.row-chk').forEach(chk => {
+                const label = chk.nextElementSibling;
+                if(label) { label.textContent = " Seleccionar Jugador"; label.style.display = "inline-block"; }
+            });
         }
+    }
+
+    function toggleCollapse(catId) {
+        const container = document.getElementById(`table-container-${catId}`);
+        const icon = document.getElementById(`icon-${catId}`);
+        if (container.classList.contains('collapsed')) {
+            container.classList.remove('collapsed');
+            icon.textContent = '▼';
+        } else {
+            container.classList.add('collapsed');
+            icon.textContent = '►';
+        }
+    }
+
+    function toggleGroupSelection(masterCanvas, catId) {
+        const checkboxes = document.querySelectorAll(`.chk-${catId}`);
+        checkboxes.forEach(chk => chk.checked = masterCanvas.checked);
+    }
+
+    function exportSelectedToCSV() {
+        const selectedChks = document.querySelectorAll('.row-chk:checked');
+        if (selectedChks.length === 0) {
+            alert('Por favor, selecciona al menos un jugador con el casillero (check) para exportar.');
+            return;
+        }
+
+        const dnisAExportar = Array.from(selectedChks).map(chk => chk.getAttribute('data-dni').toString());
+        const filtrados = todosLosSocios.filter(s => dnisAExportar.includes(s.dni.toString()));
+        filtrados.sort((a, b) => parseInt(a.dni || 0) - parseInt(b.dni || 0));
+
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+        csvContent += "DNI;Nombre;Apellido;Edad;Fecha de Nacimiento;Numero de Socio;Tipo de Socio;Categoria;Estado\n";
+
+        filtrados.forEach(s => {
+            const edad = calcularEdad(s.fechaNac);
+            csvContent += `${s.dni};${s.nombre};${s.apellido};${edad};${formatDate(s.fechaNac)};${s.numSocio};${s.tipoSocio};${s.categoria};${s.estado}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Jugadores_Seleccionados.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function formatDate(dateStr) {
@@ -323,7 +455,6 @@
         return dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
     }
 
-    /* Manejo del Modal Flotante */
     function openModalForCreate() {
         document.getElementById('socio-form').reset();
         document.getElementById('idSocio').value = '';
@@ -344,16 +475,15 @@
         document.getElementById('fechaNac').value = formatDate(j.fechaNac);
         document.getElementById('numSocio').value = j.numSocio || '';
         document.getElementById('tipoSocio').value = j.tipoSocio || 'Activo';
-        document.getElementById('categoria').value = j.categoria || 'Master';
+        document.getElementById('categoria').value = j.categoria || 'Senior';
         document.getElementById('estado').value = j.estado || 'Activo';
 
         document.getElementById('form-title').textContent = 'Modificar Ficha de Jugador';
         document.getElementById('form-modal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('form-modal').style.display = 'none';
-    }
+    /* Cierre del Modal */
+    function closeModal() { document.getElementById('form-modal').style.display = 'none'; }
 
     async function handleFormSubmit(e) {
         e.preventDefault();
@@ -385,7 +515,6 @@
         } catch (error) { showToast('Error al guardar'); }
     }
 
-    /* CAMBIO ESTRATEGICO: BAJA LÓGICA DIRECTA */
     async function toggleEstadoLogico(dni, nuevoEstado) {
         const j = todosLosSocios.find(s => s.dni.toString() === dni.toString());
         if(!j) return;
@@ -398,7 +527,6 @@
 
         showToast('Actualizando estado...');
         
-        // Creamos la estructura clon de modificación pero solo alterando el estado
         const jugadorActualizado = {
             action: 'update',
             dni: j.dni,
@@ -408,7 +536,7 @@
             numSocio: j.numSocio,
             tipoSocio: j.tipoSocio,
             categoria: j.categoria,
-            estado: nuevoEstado // Aquí se inyecta la baja lógica o reactivación
+            estado: nuevoEstado
         };
 
         try {
@@ -421,27 +549,6 @@
             showToast('Estado actualizado');
             setTimeout(fetchSocios, 1500);
         } catch (error) { showToast('Error en la baja lógica'); }
-    }
-
-    function exportToCSV() {
-        const catFilter = document.getElementById('filter-categoria').value;
-        const filtrados = todosLosSocios.filter(socio => catFilter === 'Todos' || socio.categoria === catFilter);
-        filtrados.sort((a, b) => parseInt(a.dni || 0) - parseInt(b.dni || 0));
-
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-        csvContent += "DNI;Nombre;Apellido;Fecha de Nacimiento;Numero de Socio;Tipo de Socio;Categoria;Estado\n";
-
-        filtrados.forEach(s => {
-            csvContent += `${s.dni};${s.nombre};${s.apellido};${formatDate(s.fechaNac)};${s.numSocio};${s.tipoSocio};${s.categoria};${s.estado}\n`;
-        });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Listado_Filtrado_${catFilter}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     }
 
     function showToast(m) {
