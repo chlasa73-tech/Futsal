@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futsal-pwa-v3.2'; 
+const CACHE_NAME = 'futsal-pwa-v3.3'; 
 const assets = [
   './',
   'index.html',
