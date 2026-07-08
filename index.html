@@ -202,19 +202,19 @@
     async function fetchSocios() {
         document.getElementById('loading-msg').style.display = 'block';
         try {
-            // Eliminamos parámetros restrictivos para que Google maneje la redirección nativa
-            const response = await fetch(`${WEB_APP_URL}?action=read`);
-            const textData = await response.text(); // Leemos como texto primero para evitar bloqueos
-            const resData = JSON.parse(textData);   // Parseamos manualmente el JSON
-            
+            const response = await fetch(`${WEB_APP_URL}?action=read`, {
+                method: 'GET',
+                redirect: 'follow'
+            });
+            const resData = await response.json();
             if (resData.status === 'success') {
                 todosLosSocios = resData.data;
                 aplicarFiltrosYBusqueda();
             } else {
-                showToast('Error al obtener datos de la hoja');
+                showToast('Error al procesar los datos de la hoja');
             }
         } catch (error) {
-            console.error('Error detallado de conexión:', error);
+            console.error('Error de red detallado:', error);
             showToast('Error de conexión de red');
         } finally {
             document.getElementById('loading-msg').style.display = 'none';
