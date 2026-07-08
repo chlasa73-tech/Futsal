@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futsal-pwa-v3'; // Cambiamos a v3 para forzar la actualización
+const CACHE_NAME = 'futsal-pwa-v3.1'; // Cambiamos a v3 para forzar la actualización
 const assets = [
   'index.html',
   'manifest.json',
