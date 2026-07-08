@@ -202,11 +202,11 @@
     async function fetchSocios() {
         document.getElementById('loading-msg').style.display = 'block';
         try {
-            const response = await fetch(`${WEB_APP_URL}?action=read`, {
-                method: 'GET',
-                redirect: 'follow'
-            });
-            const resData = await response.json();
+            // Realizamos la petición directa dejando que el navegador maneje la redirección de Google
+            const response = await fetch(`${WEB_APP_URL}?action=read`);
+            const textData = await response.text(); // Recibe la respuesta limpia como texto primero
+            const resData = JSON.parse(textData);   // Convierte el texto a JSON manualmente
+            
             if (resData.status === 'success') {
                 todosLosSocios = resData.data;
                 aplicarFiltrosYBusqueda();
