@@ -1,4 +1,4 @@
-const CACHE_NAME = 'socios-pwa-cache-v2.4';
+const CACHE_NAME = 'socios-pwa-cache-v2.5';
 const ASSETS = [
   './',
   './img/',
