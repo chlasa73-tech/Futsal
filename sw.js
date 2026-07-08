@@ -1,4 +1,4 @@
-const CACHE_NAME = 'futsal-pwa-v3.1'; // Cambiamos a v3 para forzar la actualización
+const CACHE_NAME = 'futsal-pwa-v3.2'; 
 const assets = [
   'index.html',
   'manifest.json',
@@ -6,7 +6,7 @@ const assets = [
   'img/icon-512.png'
 ];
 
-// Evento de instalación: guarda en caché los archivos básicos
+// Evento de instalación
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -15,7 +15,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// Evento de activación: destruye cualquier caché vieja de versiones anteriores
+// Evento de activación
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
@@ -27,6 +27,15 @@ self.addEventListener('activate', e => {
         })
       );
     }).then(() => self.clients.claim())
+  );
+});
+
+// Evento fetch
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(cachedResponse => {
+      return cachedResponse || fetch(e.request);
+    })
   );
 });
 
