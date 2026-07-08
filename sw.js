@@ -1,7 +1,8 @@
 const CACHE_NAME = 'socios-pwa-cache-v2.5';
 const ASSETS = [
   './',
-  './img/',
+  './img/icon-192.png',
+  './img/icon-512.png',
   './index.html',
   './manifest.json'
 ];
