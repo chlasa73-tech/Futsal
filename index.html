@@ -329,7 +329,7 @@
 
             title.innerHTML = `
                 <div class="category-title">
-                    <input type="checkbox" class="master-chk" data-target="${safeCatId}" onclick="toggleGroupSelection(this, '${safeCatId}')">
+                    <input type="checkbox" class="master-chk" checked data-target="${safeCatId}" onclick="toggleGroupSelection(this, '${safeCatId}')">
                     <span>${categoria.toUpperCase()} (${grupos[categoria].length})</span>
                 </div>
                 <span id="icon-${safeCatId}">▼</span>
@@ -371,7 +371,7 @@
                 tableHtml += `
                     <tr>
                         <td class="chk-col">
-                            <input type="checkbox" class="row-chk chk-${safeCatId}" data-dni="${j.dni}" id="chk-box-${j.dni}">
+                            <input type="checkbox" class="row-chk chk-${safeCatId}" checked data-dni="${j.dni}" id="chk-box-${j.dni}">
                             <label for="chk-box-${j.dni}" class="mobile-only-label" style="display:none;"></label>
                         </td>
                         <td data-label="DNI"><b>${j.dni}</b></td>
